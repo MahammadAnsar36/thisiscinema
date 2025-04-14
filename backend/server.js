@@ -14,11 +14,13 @@ const SECRET_KEY = "YOUR_SECRET_KEY";
 
 // ✅ MySQL Connection
 const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "thisiscinema_db",
-});
+    host: "biammxtpfaedytjcpwhr-mysql.services.clever-cloud.com",
+    user: "ueegp7vua4wbcov1",
+    password: "p3WG9Iq955AkfPJYange",
+    database: "biammxtpfaedytjcpwhr",
+    port: 3306,
+  });
+  
 
 db.connect((err) => {
     if (err) {
