@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 
 const app = express();
 app.use(cors({
-    origin: ["https://thisiscinema.onrender.com"], // ✅ allow frontend domain
+    origin: "https://thisiscinema.onrender.com", // ✅ allow frontend domain
     credentials: true,
   }));
 app.use(express.json());
