@@ -13,14 +13,15 @@ app.use(express.json());
 const SECRET_KEY = "YOUR_SECRET_KEY";
 
 // ✅ MySQL Connection
+require("dotenv").config();
 const db = mysql.createConnection({
-    host: "biammxtpfaedytjcpwhr-mysql.services.clever-cloud.com",
-    user: "ueegp7vua4wbcov1",
-    password: "p3WG9Iq955AkfPJYange",
-    database: "biammxtpfaedytjcpwhr",
-    port: 3306,
-  });
-  
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
+});
+
 
 db.connect((err) => {
     if (err) {
