@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { Box } from "@mui/material";
 import AuthProvider, { AuthContext } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
-import Footer from "./components/footer"; // ✅ Footer remains at the bottom
+import Footer from "./components/Footer"; // ✅ Footer remains at the bottom
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Home from "./pages/Home";
