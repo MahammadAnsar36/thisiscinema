@@ -42,7 +42,10 @@ const authenticateToken = (req, res, next) => {
     next();
   });
 };
-
+app.get("/", (req, res) => {
+    res.send("🎉 ThisIsCinema Backend is running successfully!");
+  });
+  
 // ✅ Signup
 app.post("/api/signup", async (req, res) => {
   const { name, email, phone, password } = req.body;
