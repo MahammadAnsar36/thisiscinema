@@ -1,7 +1,15 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+// vite.config.js
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: './', // ✅ important for relative pathing when deployed
-});
+  build: {
+    outDir: 'dist',
+  },
+  server: {
+    port: 5173,
+  },
+  // ⬇️ This ensures client-side routing works on Render
+  base: '/',
+})
