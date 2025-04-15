@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import emailjs from "@emailjs/browser";
+import axiosClient from "../api/axiosClient"; // ✅ Use axiosClient for backend calls
 
 // ✅ EmailJS Configuration
 const SERVICE_ID = "service_1yqri5o";
@@ -125,13 +126,13 @@ const Payment = () => {
         movie_time,
       };
 
-      const response = await axios.post("http://localhost:5000/api/book", postData, {
+      const response = await axiosClient.post("/api/book", postData, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.status === 200) {
         setSuccess("✅ Payment successful! Your ticket is booked. 🎟️");
-        sendEmail(); // ✅ Email is sent here
+        sendEmail();
         localStorage.removeItem("bookingDetails");
         setDialogOpen(true);
       } else {
@@ -202,7 +203,6 @@ const Payment = () => {
         )}
       </Paper>
 
-      {/* ✅ Ticket Dialog */}
       <Dialog open={dialogOpen} onClose={() => navigate("/")} fullWidth maxWidth="xs">
         <DialogTitle sx={{ fontWeight: "bold", color: "#28A745" }}>🎟️ Tickets Booked Successfully!</DialogTitle>
         <DialogContent>
