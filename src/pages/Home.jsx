@@ -2,9 +2,9 @@ import React, { useEffect, useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import HeroSlider from "../components/HeroSlider";
 import { Box, Typography, Grid, Container } from "@mui/material";
-import axios from "axios";
+import axiosClient from "../api/axiosClient"; // ✅ Switched to axiosClient
 import MovieCard from "../components/MovieCard";
-import { AuthContext } from "../context/AuthContext"; // ✅ Assumed auth context
+import { AuthContext } from "../context/AuthContext";
 
 const API_KEY = "bfe9cce63f5e42b7c67b220cc1d6c00f";
 const BASE_URL = "https://api.themoviedb.org/3";
@@ -14,7 +14,6 @@ const Home = () => {
   const [movies, setMovies] = useState([]);
   const { user, setUser } = useContext(AuthContext);
 
-  // ✅ Ensure user is logged out on initial load
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (!storedUser) {
@@ -22,13 +21,12 @@ const Home = () => {
     }
   }, [setUser]);
 
-  // ✅ Fetch only specific movies
   useEffect(() => {
     const fetchMoviesByTitles = async () => {
       try {
         const titles = ["AA22", "ntr31", "spirit", "peddi"];
         const moviePromises = titles.map((title) =>
-          axios.get(`${BASE_URL}/search/movie`, {
+          axiosClient.get(`${BASE_URL}/search/movie`, {
             params: { api_key: API_KEY, query: title },
           })
         );
@@ -56,10 +54,8 @@ const Home = () => {
         backgroundColor: "#FAF1E6",
       }}
     >
-      {/* ✅ Hero Banner */}
       <HeroSlider />
 
-      {/* ✅ Main Content */}
       <Box
         sx={{
           flex: 1,
