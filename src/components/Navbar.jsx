@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react"; // ✅ added useRef
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import {
@@ -35,6 +35,8 @@ const Navbar = () => {
   const [userAnchorEl, setUserAnchorEl] = useState(null);
   const [selectedCity, setSelectedCity] = useState("Select City");
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const dummyBtnRef = useRef(null); // ✅ Ref for mobile anchor
 
   useEffect(() => {
     const storedCity = localStorage.getItem("selectedCity");
@@ -238,6 +240,7 @@ const Navbar = () => {
             <IconButton onClick={toggleDrawer(true)} sx={{ color: "#EFEFEF" }}>
               <MenuIcon sx={{ fontSize: 30 }} />
             </IconButton>
+
             <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
               <Box sx={{ width: 260, p: 2 }}>
                 <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
@@ -246,10 +249,19 @@ const Navbar = () => {
 
                 <List>
                   <ListItem>
-                    <Button onClick={handleCityMenuOpen} fullWidth sx={drawerBtnStyle}>
+                    <Button
+                      onClick={() => {
+                        setDrawerOpen(false);
+                        setTimeout(() => handleCityMenuOpen({ currentTarget: dummyBtnRef.current }), 100);
+                      }}
+                      fullWidth
+                      sx={drawerBtnStyle}
+                    >
                       Change City
                     </Button>
+                    <Button ref={dummyBtnRef} sx={{ display: "none" }} />
                   </ListItem>
+
                   <ListItem button component={Link} to="/" onClick={toggleDrawer(false)}>
                     <ListItemText primary="Home" />
                   </ListItem>
@@ -289,6 +301,38 @@ const Navbar = () => {
                 </List>
               </Box>
             </Drawer>
+
+            {/* ✅ Mobile Menu for City Selection */}
+            <Menu
+              anchorEl={cityAnchorEl}
+              open={Boolean(cityAnchorEl)}
+              onClose={handleMenuClose}
+              sx={{
+                "& .MuiPaper-root": {
+                  backgroundColor: "#FAF1E6",
+                  color: "#3F7D58",
+                  borderRadius: "10px",
+                  padding: "5px",
+                },
+              }}
+            >
+              {cities.map((city, i) => (
+                <MenuItem
+                  key={i}
+                  onClick={() => handleCitySelect(city)}
+                  sx={{
+                    fontWeight: "bold",
+                    padding: "10px 20px",
+                    "&:hover": {
+                      backgroundColor: "#99BC85",
+                      color: "#fff",
+                    },
+                  }}
+                >
+                  {city}
+                </MenuItem>
+              ))}
+            </Menu>
           </>
         )}
       </Toolbar>
