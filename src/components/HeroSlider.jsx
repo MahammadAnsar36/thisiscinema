@@ -16,6 +16,7 @@ import slide1 from "../assets/hero/slide1.jpg";
 import slide2 from "../assets/hero/slide2.jpg";
 import slide3 from "../assets/hero/slide3.jpg";
 import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom"; // ✅ Added
 
 const slides = [
   {
@@ -47,6 +48,7 @@ const HeroSlider = () => {
   const { selectedCity } = useContext(AuthContext);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const navigate = useNavigate(); // ✅ Added
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -59,10 +61,10 @@ const HeroSlider = () => {
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
 
   const handleButtonClick = () => {
-    if (selectedCity === "Select City") {
+    if (!selectedCity || selectedCity === "Select City") {
       setDialogOpen(true);
     } else {
-      window.location.href = `/home/${selectedCity.toLowerCase()}`;
+      navigate(`/home/${selectedCity.toLowerCase()}`); // ✅ Fix: Use navigate instead of window.location.href
     }
   };
 
