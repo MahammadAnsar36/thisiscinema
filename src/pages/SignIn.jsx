@@ -8,9 +8,10 @@ import {
   Typography,
   Container,
   CircularProgress,
+  Alert,
 } from "@mui/material";
 import backgroundImage from "../assets/movie-ticketing.jpg";
-import axiosClient from "../api/axiosClient"; // ✅ Use axiosClient
+import axiosClient from "../api/axiosClient";
 
 const SignIn = () => {
   const { login } = useContext(AuthContext);
@@ -30,12 +31,10 @@ const SignIn = () => {
     setLoading(true);
 
     try {
-      const response = await axiosClient.post("/api/signin", formData); // ✅ axiosClient used
+      const response = await axiosClient.post("/api/signin", formData);
 
-      // ✅ Save user/token to localStorage
       localStorage.setItem("userToken", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
-
       login(response.data.user);
 
       const redirectTo = location.state?.from?.pathname || "/";
@@ -69,25 +68,37 @@ const SignIn = () => {
           p: 4,
           width: "100%",
           maxWidth: 400,
-          boxShadow: 3,
-          borderRadius: 2,
-          backgroundColor: "rgba(255, 255, 255, 0.9)",
+          boxShadow: 4,
+          borderRadius: 3,
+          backgroundColor: "rgba(255, 255, 255, 0.95)",
           textAlign: "center",
           zIndex: 1,
+          backdropFilter: "blur(3px)",
+          animation: "fadeIn 0.8s ease-in-out",
         }}
       >
         <Typography
-          variant="h5"
+          variant="h4"
           gutterBottom
-          sx={{ fontWeight: "bold", color: "#3F7D58" }}
+          sx={{
+            fontWeight: "bold",
+            color: "#3F7D58",
+            mb: 1,
+            letterSpacing: "1px",
+          }}
         >
-          🎟️ Sign In
+          🎟️ Welcome Back
         </Typography>
+        <Typography variant="body2" sx={{ color: "#555", mb: 2 }}>
+          Sign in to book your tickets instantly
+        </Typography>
+
         {error && (
-          <Typography color="error" sx={{ mb: 2 }}>
+          <Alert severity="error" sx={{ mb: 2 }}>
             {error}
-          </Typography>
+          </Alert>
         )}
+
         <form onSubmit={handleSubmit}>
           <TextField
             fullWidth
@@ -98,7 +109,15 @@ const SignIn = () => {
             value={formData.email}
             onChange={handleChange}
             required
-            sx={{ backgroundColor: "#FDFAF6" }}
+            sx={{
+              backgroundColor: "#FDFAF6",
+              borderRadius: "6px",
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": { borderColor: "#ccc" },
+                "&:hover fieldset": { borderColor: "#3F7D58" },
+                "&.Mui-focused fieldset": { borderColor: "#3F7D58" },
+              },
+            }}
           />
           <TextField
             fullWidth
@@ -109,8 +128,17 @@ const SignIn = () => {
             value={formData.password}
             onChange={handleChange}
             required
-            sx={{ backgroundColor: "#FDFAF6" }}
+            sx={{
+              backgroundColor: "#FDFAF6",
+              borderRadius: "6px",
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": { borderColor: "#ccc" },
+                "&:hover fieldset": { borderColor: "#3F7D58" },
+                "&.Mui-focused fieldset": { borderColor: "#3F7D58" },
+              },
+            }}
           />
+
           <Button
             fullWidth
             variant="contained"
@@ -119,7 +147,14 @@ const SignIn = () => {
               mt: 3,
               backgroundColor: "#EC5228",
               color: "#EFEFEF",
-              "&:hover": { backgroundColor: "#99BC85" },
+              fontWeight: "bold",
+              py: 1.5,
+              fontSize: "16px",
+              borderRadius: "8px",
+              transition: "all 0.3s",
+              "&:hover": {
+                backgroundColor: "#99BC85",
+              },
             }}
             disabled={loading}
           >
