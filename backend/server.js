@@ -3,19 +3,21 @@ const cors = require("cors");
 const mysql = require("mysql");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 const app = express();
+
 app.use(cors({
-    origin: "https://thisiscinema.onrender.com", // ✅ allow frontend domain
-    credentials: true,
-  }));
+  origin: "https://thisiscinema.onrender.com", // ✅ frontend domain
+  credentials: true,
+}));
 app.use(express.json());
 
-const SECRET_KEY = "YOUR_SECRET_KEY";
+const SECRET_KEY = "YOUR_SECRET_KEY"; // ✅ Keep secret in .env for production
 
-// ✅ MySQL Connection
-require("dotenv").config();
-const db = mysql.createConnection({
+// ✅ MySQL Connection Pool (Better for Railway/cloud deployment)
+const db = mysql.createPool({
+  connectionLimit: 10,
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -23,15 +25,16 @@ const db = mysql.createConnection({
   port: process.env.DB_PORT,
 });
 
-db.connect((err) => {
+db.getConnection((err, connection) => {
   if (err) {
     console.error("❌ Database connection failed:", err);
     process.exit(1);
   }
   console.log("✅ MySQL Connected...");
+  connection.release();
 });
 
-// ✅ JWT Authentication Middleware
+// ✅ JWT Auth Middleware
 const authenticateToken = (req, res, next) => {
   const token = req.headers["authorization"];
   if (!token) return res.status(403).json({ message: "Access denied. No token provided." });
@@ -42,10 +45,12 @@ const authenticateToken = (req, res, next) => {
     next();
   });
 };
+
+// ✅ Health Check
 app.get("/", (req, res) => {
-    res.send("🎉 ThisIsCinema Backend is running successfully!");
-  });
-  
+  res.send("🎉 ThisIsCinema Backend is running successfully!");
+});
+
 // ✅ Signup
 app.post("/api/signup", async (req, res) => {
   const { name, email, phone, password } = req.body;
@@ -84,9 +89,7 @@ app.post("/api/signin", (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, { expiresIn: "1h" });
 
     res.status(200).json({
       message: "✅ Login successful",
@@ -96,7 +99,7 @@ app.post("/api/signin", (req, res) => {
   });
 });
 
-// ✅ Booking (Email logic removed)
+// ✅ Book Ticket
 app.post("/api/book", authenticateToken, (req, res) => {
   const {
     movie,
@@ -108,19 +111,17 @@ app.post("/api/book", authenticateToken, (req, res) => {
     movie_time,
   } = req.body;
 
-  const missingFields = [];
-  if (!movie) missingFields.push("movie");
-  if (!theater) missingFields.push("theater");
-  if (!selectedSeats?.length) missingFields.push("selectedSeats");
-  if (!totalPrice) missingFields.push("totalPrice");
-  if (!movie_date) missingFields.push("movie_date");
-  if (!movie_day) missingFields.push("movie_day");
-  if (!movie_time) missingFields.push("movie_time");
+  const missing = [];
+  if (!movie) missing.push("movie");
+  if (!theater) missing.push("theater");
+  if (!selectedSeats?.length) missing.push("selectedSeats");
+  if (!totalPrice) missing.push("totalPrice");
+  if (!movie_date) missing.push("movie_date");
+  if (!movie_day) missing.push("movie_day");
+  if (!movie_time) missing.push("movie_time");
 
-  if (missingFields.length > 0) {
-    return res.status(400).json({
-      message: `⚠️ Missing required fields: ${missingFields.join(", ")}`,
-    });
+  if (missing.length > 0) {
+    return res.status(400).json({ message: `⚠️ Missing: ${missing.join(", ")}` });
   }
 
   const userEmail = req.user.email;
@@ -130,10 +131,10 @@ app.post("/api/book", authenticateToken, (req, res) => {
   let formattedDate, formattedTime;
   try {
     formattedDate = new Date(movie_date).toISOString().split("T")[0];
-    const timeParts = movie_time.match(/(\d+):(\d+)\s?(AM|PM)/i);
-    let hours = parseInt(timeParts[1], 10);
-    const minutes = timeParts[2];
-    const meridian = timeParts[3].toUpperCase();
+    const match = movie_time.match(/(\d+):(\d+)\s?(AM|PM)/i);
+    let hours = parseInt(match[1], 10);
+    const minutes = match[2];
+    const meridian = match[3].toUpperCase();
     if (meridian === "PM" && hours < 12) hours += 12;
     if (meridian === "AM" && hours === 12) hours = 0;
     formattedTime = `${hours.toString().padStart(2, "0")}:${minutes}:00`;
@@ -187,7 +188,7 @@ app.post("/api/book", authenticateToken, (req, res) => {
   );
 });
 
-// ✅ Fetch Bookings
+// ✅ Get Bookings
 app.get("/api/bookings", authenticateToken, (req, res) => {
   const userEmail = req.user.email;
   db.query("SELECT * FROM bookings WHERE user_email = ?", [userEmail], (err, result) => {
@@ -197,6 +198,6 @@ app.get("/api/bookings", authenticateToken, (req, res) => {
   });
 });
 
-// ✅ Server Start
-const PORT = 5000;
+// ✅ Start Server
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
