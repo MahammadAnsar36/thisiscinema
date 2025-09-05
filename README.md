@@ -1,12 +1,37 @@
-# React + Vite
+# 🎬 ThisIsCinema Movie Booking site
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack movie ticket booking application built with **React.js**, **Node.js (Express)**, and **MySQL/XAMPP**.  
+Users can browse movies, select theaters & showtimes, choose seats, make payments, and store their bookings in a database.  
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Features
 
-## Expanding the ESLint configuration
+- 🔐 **User Authentication** – Login & Register with secure JWT authentication.
+- 🎥 **Movie Listings** – Fetch movies dynamically from **TMDB API**.
+- 🎭 **Theater & Showtimes** – Auto-generated theaters and show timings.
+- 🎟️ **Seat Selection** – Interactive seat layout with VIP, Master, and Normal seats.
+- 💳 **Payment Page** – Simulated payment flow with booking confirmation.
+- 🗄 **Database Integration** – Stores bookings linked with users.
+- 📱 **Responsive UI** – Built using **Material-UI** with a clean design.
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- React.js (with React Router DOM)
+- Material-UI (MUI)
+- Axios for API requests
+
+### Backend
+- Node.js + Express.js
+- JWT Authentication
+- REST API endpoints for authentication & bookings
+- XAMPP and sql as Database
+
+### Database
+- MySQL with tables:
+  - **users** → (id, name, email, phone, password, role)
+  - **bookings** → (id, user_email, theater, movie, selected_seats, total_price, booking_time)
+
